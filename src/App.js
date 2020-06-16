@@ -36,7 +36,7 @@ function App() {
   const handleSignIn = async () => {
     try {
       const { data } = await axios.post(`${apiUrl}/user/login`, {
-        email: 'elliot@test.com',
+        email: 'test1@test.com',
         password: 'admin'
       })
       const { accessToken, user } = data 
