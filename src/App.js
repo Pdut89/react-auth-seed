@@ -1,22 +1,6 @@
 import React, { useState } from 'react'
-import axios from 'axios'
-
-const apiUrl = process.env.REACT_APP_API_URL
-
-axios.interceptors.request.use(
-  config => {
-    const { origin } = new URL(config.url)
-    const allowedOrigins = [apiUrl]
-    const token = localStorage.getItem('token')
-    if (allowedOrigins.includes(origin)) {
-      config.headers.authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  error => {
-    return Promise.reject(error)
-  }
-)
+import api from './api'
+require('./config/api')
 
 function App() {
 
@@ -35,10 +19,10 @@ function App() {
 
   const handleSignIn = async () => {
     try {
-      const { data } = await axios.post(`${apiUrl}/user/login`, {
-        email: 'test1@test.com',
+      const { data } = await api.user.post({
+        email: 'elliot@test.com',
         password: 'admin'
-      })
+      }, '/login')
       const { accessToken, user } = data 
 
       localStorage.setItem('token', accessToken)
@@ -53,12 +37,19 @@ function App() {
 
   const handleLogOut = async () => {
     try {
-      await axios.post(`${apiUrl}/user/logout`)
+      await api.user.post({}, '/logout')
       clearUser()
-      
     } catch (error) {
       console.error(error)
       if (error.response.status === 401) clearUser()
+    }
+  }
+
+  const handleCreateUser = async () => {
+    try {
+      await api.user.post({name: 'Pieter', role: 'super-admin', email: 'pieter@test.com', password: 'admin'})
+    } catch (error) {
+      console.error(error)
     }
   }
   
@@ -69,6 +60,10 @@ function App() {
       </h4>
       <button onClick={user ? handleLogOut : handleSignIn}>
         {!!authToken ? 'Log out' : 'Sign in'}
+      </button>
+
+      <button onClick={handleCreateUser}>
+        Create user
       </button>
     </div>
   )
