@@ -7,6 +7,9 @@ export default function (name) {
   return {
     post: (data = {}, additional = '') => ( 
       axios.post(`${route}${additional}`, data) 
+    ),
+    get: (additional = '') => (
+      axios.get(`${route}${additional}`)
     )
   }
 }
