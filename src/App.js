@@ -1,7 +1,16 @@
 import React, { Component } from 'react'
 import api from './api'
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect
+} from "react-router-dom";
+
 import { UserContext } from './context/user'
 
+import Home from './pages'
 import Login from './pages/login'
 
 require('./config/api')
@@ -73,15 +82,29 @@ class App extends Component {
 
   render () {
     const { user, isLoading } = this.state
-
+    
     if (isLoading) return <p>Loading...</p>
 
     return (
       <UserContext.Provider value={{ user }}>
-        <Login 
-          setUserAndTokens={this.setUserAndTokens}
-          clearUserAndTokens={this.clearUserAndTokens}
-        />
+        <Router>
+          {user ? (
+            <Switch>
+              <Route exact path="/">
+                <Home clearUserAndTokens={this.clearUserAndTokens} />
+              </Route>
+              <Route exact path="*">
+                <Redirect to="/"/>
+              </Route>
+            </Switch>
+          ) : (
+            <Switch>
+              <Route path="*">
+                <Login setUserAndTokens={this.setUserAndTokens} />
+              </Route>
+            </Switch>
+          )}
+        </Router>
       </UserContext.Provider>
     )
   }
